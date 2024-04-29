@@ -57,7 +57,7 @@ public class CharacterStats : MonoBehaviour
             _regenerationProcess = DOVirtual.Float(_stamina, _maxStamina, (_maxStamina - _stamina) / _staminaPerSecond, value =>
             {
                 _stamina = value;
-                OnStaminaChange.Invoke(_stamina / _maxStamina);
+                OnStaminaChange?.Invoke(_stamina / _maxStamina);
             });
             _staminaTimer = 2;
         }

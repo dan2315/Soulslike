@@ -12,14 +12,13 @@ class PlayerExtendedCharacterController : ExtendedCharacterController
 
             float cameraDirection = -_cameraController.CameraLookAngle * Mathf.Deg2Rad;
 
-            Vector3 newForward = new(Mathf.Cos(cameraDirection + 90 * Mathf.Deg2Rad), 0, Mathf.Sin(cameraDirection + 90 * Mathf.Deg2Rad));
-            Vector3 newRight = new(Mathf.Cos(cameraDirection), 0, Mathf.Sin(cameraDirection));
+            Vector3 newForward = new(Mathf.Cos(cameraDirection), 0, Mathf.Sin(cameraDirection));
+            Vector3 newRight = new(Mathf.Cos(cameraDirection + 90 * Mathf.Deg2Rad), 0, Mathf.Sin(cameraDirection + 90 * Mathf.Deg2Rad));
 
             Debug.DrawRay(transform.position, newForward);
             Debug.DrawRay(transform.position, newRight, Color.green);
 
-
-            Vector3 targetDirection = newRight * inputContainer.MoveDirection.x + newForward * inputContainer.MoveDirection.z;
+            Vector3 targetDirection = newRight * inputContainer.MoveDirection.x - newForward * inputContainer.MoveDirection.z;
             moveDirection = Vector3.Lerp(moveDirection, targetDirection, 0.5f);
 
             inputContainer.Set(moveDirection);

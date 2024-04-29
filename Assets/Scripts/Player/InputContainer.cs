@@ -28,8 +28,26 @@ public class InputContainer
         _dodge = dodge;
         _changeWeapon = changeWeapon;
     }
+
+    public void Set(Vector3 moveDirection, bool attack, bool secondaryAttack, bool dodge)
+    {
+        _moveDirection = moveDirection;
+        _attack = attack;
+        _secondaryAttack = secondaryAttack;
+        _dodge = dodge;
+    }
     public void Set(Vector3 moveDirection)
     {
         _moveDirection = moveDirection;
+    }
+
+    public void Reset()
+    {
+        _moveDirection = Vector3.zero;
+        _cameraMoveDirection = Vector3.zero;
+        _attack = false;
+        _secondaryAttack = false;
+        _dodge = false;
+        _changeWeapon = false;
     }
 }

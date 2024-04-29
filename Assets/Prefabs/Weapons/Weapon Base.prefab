@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6109998500063075280}
   - component: {fileID: 5973968047368513797}
+  - component: {fileID: 3607974143089469381}
   m_Layer: 0
   m_Name: Weapon Base
   m_TagString: Untagged
@@ -46,6 +47,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: 
+  _damage: 0
+  _attackSpeed: 0
+--- !u!65 &3607974143089469381
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2581106754301472519}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.2543337, y: 0.11309263, z: 0.19460997}
+  m_Center: {x: -0.55757785, y: -0.000000014901161, z: -0.0016303211}
 --- !u!1 &3328836394047081053
 GameObject:
   m_ObjectHideFlags: 0

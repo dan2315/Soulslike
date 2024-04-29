@@ -6,11 +6,6 @@ public class PlayerInput : MonoBehaviour, IInputProvider
     private Action<InputContainer> _onPlayerInput;
     private InputContainer _inputContainer = new();
 
-    private Vector3 _previousMousePosition;
-
-    void Start() {
-        _previousMousePosition = Input.mousePosition;
-    }
 
     void Update()
     {

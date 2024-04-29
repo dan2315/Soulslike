@@ -1,5 +1,7 @@
 using System;
 using DG.Tweening;
+using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
 
 class CombatController : MonoBehaviour
@@ -10,20 +12,21 @@ class CombatController : MonoBehaviour
     private CharacterStats _characterStats;
     private Transform _visuals;
     private Animator _animator;
+    private WeaponController _weaponController;
     private Vector3 _previousHipPosition;
     private Action _onStart;
     private bool _isAttacking;
     private bool _rolling;
-    private float _attackTimer = 2f;
     public bool Rolling => _rolling;
 
-    public void Initialize(CharacterController characterController, CharacterStats characterStats, Animator animator, Action OnStart, Action OnEnd, Transform visuals)
+    public void Initialize(CharacterController characterController, CharacterStats characterStats, Animator animator, Action OnActionStart, Action ActionPerformed, Transform visuals, WeaponController weaponController)
     {
         _characterController = characterController;
         _characterStats = characterStats;
         _animator = animator;
-        _onStart = OnStart;
-        _animatorEvents.OnAnimationCompleted += OnEnd;
+        _onStart = OnActionStart;
+        _weaponController = weaponController;
+        _animatorEvents.OnAnimationCompleted += ActionPerformed;
         _animatorEvents.OnAnimationCompleted += StopRolling;
         _animatorEvents.OnAnimationCompleted += StopAttacking;
         _visuals = visuals;
@@ -37,6 +40,7 @@ class CombatController : MonoBehaviour
         _isAttacking = true;
         _animator.SetBool("Attacking", _isAttacking);
         _animator.SetTrigger("Attack");
+        _weaponController.CurrentWeapon.SetHitbox(true);
         DOTween.Sequence()
         .AppendInterval(0.2f)
         .Append(AnimateRootMovement(0.25f, 0.5f));
@@ -51,6 +55,7 @@ class CombatController : MonoBehaviour
         _isAttacking = true;
         _animator.SetBool("Attacking", _isAttacking);
         _animator.SetTrigger("SecondaryAttack");
+        _weaponController.CurrentWeapon.SetHitbox(true);
         DOTween.Sequence()
         .AppendInterval(0.2f)
         .Append(AnimateRootMovement(0.25f, 0.5f));
@@ -82,6 +87,7 @@ class CombatController : MonoBehaviour
         if (_isAttacking)
         {
             _isAttacking = false;
+        _weaponController.CurrentWeapon.SetHitbox(false);
             _animator.SetBool("Attacking", _isAttacking);
         }
     }

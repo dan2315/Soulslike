@@ -4,16 +4,38 @@ class Gamemode : MonoBehaviour
 {
     [SerializeField] string _gamemodeName;
     [SerializeField] UIController _UIController;
-    [SerializeField] PlayerExtendedCharacterController _playableCharacter;
-    [SerializeField] EnemyExtendedCharacterController _enemyCharacter;
+    [SerializeField] PlayerCharacter _playableCharacter;
+    [SerializeField] EnemyCharacter _enemyCharacter;
+    private EndScreen _endScreen;
 
     public void Awake()
     {
-        _playableCharacter.CharacterStats.OnHealthChange += _UIController.PlayerHealth.Change;
-        _playableCharacter.CharacterStats.OnStaminaChange += _UIController.PlayerStamina.Change;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
-        _playableCharacter.WeaponController.WeaponChanged += weapon => _UIController.SelectedWeapon.text = weapon.Name;
+        _endScreen = _UIController.EndScreen;
 
-        // _enemyCharacter.CharacterStats.OnHealthChange += _UIController.EnemyHealth.Change;
+        _playableCharacter.CharacterController.CharacterStats.OnHealthChange += _UIController.PlayerHealth.Change;
+        _playableCharacter.CharacterController.CharacterStats.OnStaminaChange += _UIController.PlayerStamina.Change;
+
+        _playableCharacter.CharacterController.WeaponController.WeaponChanged += weapon => _UIController.SelectedWeapon.text = weapon.Name;
+
+        _enemyCharacter.CharacterController.CharacterStats.OnHealthChange += _UIController.EnemyHealth.Change;
+        
+        _enemyCharacter.EnemyAI.SetTarget(_playableCharacter);
+        
+        _playableCharacter.CharacterController.CharacterStats.OnHealthChange += health => {
+            if (health <= 0)
+            {
+                _endScreen.Show("Whops, you have died. Do you want try one more time?", "Definetly", "I've had enough");
+            }
+        };
+
+        _enemyCharacter.CharacterController.CharacterStats.OnHealthChange += health => {
+            if (health <= 0)
+            {
+                _endScreen.Show("Great Enemy Felled", "Gimme one more bastard to destroy", "Meh, boring game");
+            }
+        };
     }
 }

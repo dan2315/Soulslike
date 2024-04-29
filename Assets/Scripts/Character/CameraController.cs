@@ -6,7 +6,7 @@ public class CameraController : MonoBehaviour
     
     public float CameraLookAngle => _cameraRotationPivot.localEulerAngles.y;
 
-    public void Initialize(PlayerInput playerInput)
+    public void Initialize(IInputProvider playerInput)
     {
         playerInput.SubscribeOnInputUpdate(UpdateCameraTransform);
     }
