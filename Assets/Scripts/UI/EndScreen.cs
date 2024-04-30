@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -28,6 +29,11 @@ public class EndScreen : MonoBehaviour
         _buttonRetry.onClick.AddListener(() => SceneManager.LoadScene("Main"));
         _buttonExit.onClick.AddListener(Application.Quit);
 
-        gameObject.SetActive(true);
+        DOTween.Sequence().AppendInterval(1f).SetUpdate(true).OnComplete(() =>
+        {
+            gameObject.SetActive(true);
+            gameObject.SetActive(true);
+        });
+
     }
 }

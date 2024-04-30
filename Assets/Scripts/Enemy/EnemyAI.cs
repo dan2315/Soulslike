@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 public class EnemyAI : MonoBehaviour, IInputProvider
 {
     [SerializeField] private float _attackRange = 2.0f;
-    [SerializeField] private float _dodgeChance = 0.25f;
+    [SerializeField] private float _dodgeChance = 0.1f;
     private Character _target;
     private InputContainer _inputContainer = new();
 
@@ -44,7 +44,7 @@ public class EnemyAI : MonoBehaviour, IInputProvider
             else
             {
                 if (Random.value > 0.5f) attack = true;
-                else secondaryAttack = false;
+                else secondaryAttack = true;
             }
         }
 

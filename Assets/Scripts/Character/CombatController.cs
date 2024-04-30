@@ -41,7 +41,6 @@ public class CombatController : MonoBehaviour
     public void SecondaryAttack()
     {
         Attack(30, "SecondaryAttack");
-
     }
     private void Attack(float staminaConsumed, string animationTrigger)
     {
@@ -54,7 +53,7 @@ public class CombatController : MonoBehaviour
         _isAttacking = true;
         _animator.SetBool("Attacking", _isAttacking);
         _animator.SetTrigger(animationTrigger);
-        _weaponController.CurrentWeapon.SetHitbox(true);
+        DOTween.Sequence().AppendInterval(0.25f).OnComplete(() => _weaponController.CurrentWeapon.SetHitbox(true));
         _rootMovement = DOTween.Sequence()
         .AppendInterval(0.2f)
         .Append(AnimateRootMovement(0.25f, 0.5f));

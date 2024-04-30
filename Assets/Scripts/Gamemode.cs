@@ -11,6 +11,7 @@ class Gamemode : MonoBehaviour
 
     public void Awake()
     {
+        Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -44,7 +45,6 @@ class Gamemode : MonoBehaviour
 
     private void ProcessGameEnd()
     {
-        // _playableCharacter.Disable();
-        // _enemyCharacter.Disable();
+        Time.timeScale = 0.01f;
     }
 }
