@@ -11,4 +11,10 @@ public class PlayerCharacter : Character
         _cameraController.Initialize(_inputProvider);
         base.Start();
     }
+
+    public override void Disable()
+    {
+        base.Disable();
+        _cameraController.enabled = false;
+    }
 }

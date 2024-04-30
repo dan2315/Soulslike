@@ -18,7 +18,6 @@ public class CharacterStats : MonoBehaviour
 
     public float Health => _health;
     public float Stamina => _stamina;
-    public bool IsInvincible => _invincibilityState;
 
     void Awake()
     {
@@ -28,6 +27,7 @@ public class CharacterStats : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (_invincibilityState) return;
         _health -= damage;
         OnHealthChange.Invoke(_health / _maxHealth);
 

@@ -178,7 +178,7 @@ MonoBehaviour:
   _weaponController: {fileID: 7097625288123194760}
   _combatController: {fileID: 34475143381766915}
   _characterStats: {fileID: 2130047363230088879}
-  _speed: 4
+  _speed: 6
   gravity: -9.81
   _cameraController: {fileID: 6205582585277220970}
 --- !u!114 &6205582585277220970

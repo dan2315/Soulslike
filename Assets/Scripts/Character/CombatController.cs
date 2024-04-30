@@ -1,10 +1,8 @@
 using System;
 using DG.Tweening;
-using Unity.VisualScripting;
-using UnityEditor.Animations;
 using UnityEngine;
 
-class CombatController : MonoBehaviour
+public class CombatController : MonoBehaviour
 {
     [SerializeField] Transform _hip;
     [SerializeField] AnimatorEvents _animatorEvents;
@@ -15,9 +13,13 @@ class CombatController : MonoBehaviour
     private WeaponController _weaponController;
     private Vector3 _previousHipPosition;
     private Action _onStart;
+    private Tween _rootMovement;
     private bool _isAttacking;
     private bool _rolling;
+    private bool _staggered;
+    public bool Attacking => _isAttacking;
     public bool Rolling => _rolling;
+    public bool Staggered => _staggered;
 
     public void Initialize(CharacterController characterController, CharacterStats characterStats, Animator animator, Action OnActionStart, Action ActionPerformed, Transform visuals, WeaponController weaponController)
     {
@@ -27,58 +29,76 @@ class CombatController : MonoBehaviour
         _onStart = OnActionStart;
         _weaponController = weaponController;
         _animatorEvents.OnAnimationCompleted += ActionPerformed;
-        _animatorEvents.OnAnimationCompleted += StopRolling;
-        _animatorEvents.OnAnimationCompleted += StopAttacking;
+        _animatorEvents.OnAnimationCompleted += OnAnyAnimationCompleted;
+        _characterStats.OnHealthChange += Stagger;
         _visuals = visuals;
     }
-    public void Attack()
+    public void PrimaryAttack()
     {
-        if (_isAttacking == false)
-            if (ProcessStamina(20)) return;
-
-        _onStart.Invoke();
-        _isAttacking = true;
-        _animator.SetBool("Attacking", _isAttacking);
-        _animator.SetTrigger("Attack");
-        _weaponController.CurrentWeapon.SetHitbox(true);
-        DOTween.Sequence()
-        .AppendInterval(0.2f)
-        .Append(AnimateRootMovement(0.25f, 0.5f));
+        Attack(20, "Attack");
     }
 
     public void SecondaryAttack()
     {
-        if (_isAttacking == false)
-            if (ProcessStamina(30)) return;
+        Attack(30, "SecondaryAttack");
+
+    }
+    private void Attack(float staminaConsumed, string animationTrigger)
+    {
+        if (_isAttacking) return;
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Third Swing")
+        || _animator.GetCurrentAnimatorStateInfo(0).IsName("Third Swing 0")) return;
+        if (ProcessStamina(staminaConsumed)) return;
 
         _onStart.Invoke();
         _isAttacking = true;
         _animator.SetBool("Attacking", _isAttacking);
-        _animator.SetTrigger("SecondaryAttack");
+        _animator.SetTrigger(animationTrigger);
         _weaponController.CurrentWeapon.SetHitbox(true);
-        DOTween.Sequence()
+        _rootMovement = DOTween.Sequence()
         .AppendInterval(0.2f)
         .Append(AnimateRootMovement(0.25f, 0.5f));
     }
+
     public void Dodge()
     {
-        if (_rolling == false)
-            if (ProcessStamina(15)) return;
+        if (_rolling) return;
+        if (ProcessStamina(15)) return;
 
         _onStart.Invoke();
         _rolling = true;
         _animator.SetBool("Dodge", _rolling);
-        DOTween.Sequence()
+        _characterStats.SetInvincible(true);
+        _rootMovement = DOTween.Sequence()
         .AppendInterval(0.2f)
         .Append(AnimateRootMovement(0.5f, 0.8f));
     }
 
+    public void Stagger(float damage)
+    {
+        _onStart.Invoke();
+        StopAttacking();
+        _animator.SetTrigger("HitTaken");
+        _staggered = true;
+    }
+
+    private void OnAnyAnimationCompleted()
+    {
+        StopStagger();
+        StopRolling();
+        StopAttacking();
+    }
+    private void StopStagger()
+    {
+        _staggered = false;
+    }
     private void StopRolling()
     {
         if (_rolling)
         {
             _rolling = false;
             _animator.SetBool("Dodge", _rolling);
+            _characterStats.SetInvincible(false);
         }
     }
 
@@ -87,7 +107,7 @@ class CombatController : MonoBehaviour
         if (_isAttacking)
         {
             _isAttacking = false;
-        _weaponController.CurrentWeapon.SetHitbox(false);
+            _weaponController.CurrentWeapon.SetHitbox(false);
             _animator.SetBool("Attacking", _isAttacking);
         }
     }
@@ -116,5 +136,12 @@ class CombatController : MonoBehaviour
         _hip.localPosition = currentPosition;
 
         _previousHipPosition = _hip.localPosition;
+    }
+
+    private void OnDestroy()
+    {
+        _rootMovement.Kill();
+        _animatorEvents.OnAnimationCompleted -= StopRolling;
+        _animatorEvents.OnAnimationCompleted -= StopAttacking;
     }
 }

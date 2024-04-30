@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 class Gamemode : MonoBehaviour
@@ -28,6 +29,7 @@ class Gamemode : MonoBehaviour
             if (health <= 0)
             {
                 _endScreen.Show("Whops, you have died. Do you want try one more time?", "Definetly", "I've had enough");
+                ProcessGameEnd();
             }
         };
 
@@ -35,7 +37,14 @@ class Gamemode : MonoBehaviour
             if (health <= 0)
             {
                 _endScreen.Show("Great Enemy Felled", "Gimme one more bastard to destroy", "Meh, boring game");
+                ProcessGameEnd();
             }
         };
+    }
+
+    private void ProcessGameEnd()
+    {
+        // _playableCharacter.Disable();
+        // _enemyCharacter.Disable();
     }
 }

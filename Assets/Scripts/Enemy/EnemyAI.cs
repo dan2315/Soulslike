@@ -31,15 +31,15 @@ public class EnemyAI : MonoBehaviour, IInputProvider
         bool dodge = false;
         bool attack = false;
 
-        if (distanceToPlayer > _attackRange)
-        {
-            moveDirection = (_target.transform.position - transform.position).normalized;
-        }
-        else
+
+        moveDirection = (_target.transform.position - transform.position).normalized;
+        
+        if (distanceToPlayer < _attackRange)
         {
             if (Random.value < _dodgeChance)
             {
                 dodge = true;
+                moveDirection = -(_target.transform.position - transform.position).normalized;
             }
             else
             {

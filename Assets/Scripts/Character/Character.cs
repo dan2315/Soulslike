@@ -17,4 +17,9 @@ public class Character : MonoBehaviour
         _characterController.Initialize(_inputProvider, _visuals, _animator);
         _weaponController.Initialize(_inputProvider, _weaponMountPoint, _animator, _characterController.CharacterStats);
     }
+
+    public virtual void Disable()
+    {
+        // _visuals.gameObject.SetActive(false);
+    }
 }

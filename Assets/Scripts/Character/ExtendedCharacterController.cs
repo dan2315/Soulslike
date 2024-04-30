@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class ExtendedCharacterController : MonoBehaviour
 {
-    [SerializeField] WeaponController _weaponController;
-    [SerializeField] CombatController _combatController;
-    [SerializeField] CharacterStats _characterStats;
+    [SerializeField] private WeaponController _weaponController;
+    [SerializeField] protected CombatController _combatController;
+    [SerializeField] private CharacterStats _characterStats;
 
     [Header("Options")]
     [SerializeField] private float _speed;
@@ -27,22 +27,23 @@ public class ExtendedCharacterController : MonoBehaviour
         _visuals = visuals;
         _animator = animator;
         _combatController.Initialize(_characterController, _characterStats, _animator, ActionStarted, ActionPerformed, _visuals, _weaponController);
-        inputProvider.SubscribeOnInputUpdate(Operate);
-        Debug.Log($"Called sdasd for {gameObject.name}");
+        inputProvider.SubscribeOnInputUpdate(ProcessInput);
     }
 
-    public virtual void Operate(InputContainer inputContainer)
+    public virtual void ProcessInput(InputContainer inputContainer)
     {
         if (!_canPerformNewAction) return;
 
         var isMoving = inputContainer.MoveDirection != Vector3.zero;
         var isAttacking = inputContainer.Attack || inputContainer.SecondaryAttack;
+        var canMove = !isAttacking && !_combatController.Staggered && !_combatController.Rolling;
 
-        _animator.SetBool("IsMoving", isMoving && !isAttacking);
+        _animator.SetBool("IsMoving", isMoving && canMove);
 
-        if (!_combatController.Rolling) _characterController.Move(inputContainer.MoveDirection * _speed * Time.deltaTime);
+        if (canMove) _characterController.Move(inputContainer.MoveDirection * _speed * Time.deltaTime);
+        if (isMoving && canMove) ApplyRotation(inputContainer);
 
-        if (inputContainer.Attack) _combatController.Attack();
+        if (inputContainer.Attack) _combatController.PrimaryAttack();
         if (inputContainer.SecondaryAttack) _combatController.SecondaryAttack();
         if (inputContainer.Dodge) _combatController.Dodge();
     }
@@ -50,6 +51,14 @@ public class ExtendedCharacterController : MonoBehaviour
     private void Update()
     {
         ApplyGravity();
+    }
+
+    private void ApplyRotation(InputContainer inputContainer)
+    {
+        Vector3 newRotation = _visuals.transform.eulerAngles;
+        newRotation.y = Vector3.SignedAngle(Vector3.forward, inputContainer.MoveDirection, Vector3.up);
+        _visuals.transform.rotation = Quaternion.Lerp(_visuals.transform.rotation, Quaternion.Euler(newRotation), 0.5f);
+        if (inputContainer.Dodge) _visuals.transform.eulerAngles = newRotation;
     }
 
     private void ApplyGravity()
